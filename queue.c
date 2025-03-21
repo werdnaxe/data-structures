@@ -29,19 +29,28 @@ void enqueue(struct queue* q, int num) {
     fprintf(stderr, "Queue is full\n");
     exit(EXIT_FAILURE);
   }
-  
-  q->arr[q->tail++] = num;
-  q->count++;  
+
+  if (!q->count) {
+    q->arr[q->tail] = num;
+  } else {
+    q->arr[q->tail + 1] = num;
+    q->tail++;
+  }
+  q->count++;
 }
 
-int dequeue(struct queue* q) {
+void dequeue(struct queue* q) {
 
   if (!q->count) {
     fprintf(stderr, "Queue is empty\n");
     exit(EXIT_FAILURE);
   }
-
-  q->arr[q->head++] = INT_MIN;
+  
+  if (q->count == 1) {
+    q->arr[q->head] = INT_MIN;
+  } else {
+    q->arr[q->head++] = INT_MIN;
+  }
   q->count--;
 }
 
@@ -56,6 +65,39 @@ int peek(struct queue* q) {
   return num;
 }
 
+void clear(struct queue* q) {
+
+  initialize_queue(q);
+}
+
+void align(struct queue* q) {
+
+  if (!q->count || q->count == MAXSIZE) {
+    printf("Queue already aligned\n");
+    return;
+  }
+
+  int i = q->head;
+  q->head = 0;
+  int start = q->head;
+  while (start != q->tail) {
+    q->arr[start++] = q->arr[i++];
+  }
+  q->tail = q->count - 1;
+}
+
+void print_queue(struct queue* q) {
+
+  if (!q->count) {
+    printf("Queue is empty\n");
+    return;
+  }
+  
+  for (int i = q->head; i <= q->tail; i++) {
+    printf("[%d]", q->arr[i]);
+  }
+}
+
 int main() {
 
   struct queue queue;
@@ -66,20 +108,31 @@ int main() {
   enqueue(&queue, 47);
   enqueue(&queue, 11);
 
-  for (int i = 0; i < queue.count; i++) {
+  print_queue(&queue);   // [1][7][47][11]
+  printf("   Count = %d\n", queue.count);   // 4
+
+  dequeue(&queue);
+  dequeue(&queue);
+
+  for (int i = 0; i <= queue.tail; i++) {   // [INT_MIN][INT_MIN][47][11]
     printf("[%d]", queue.arr[i]);
   }
-  printf("   Count = %d\n", queue.count);
+  printf("   Count = %d\n", queue.count);   // 2
 
-  int num1 = dequeue(&queue);
-  printf("Num 1: %d\n", num1);
-  int num2 = dequeue(&queue);
-  printf("Num 2: %d\n", num2);
-
-  for (int i = queue.head; i < queue.tail; i++) {
+  align(&queue);
+  
+  for (int i = 0; i <= queue.tail; i++) {   // [47][11]
     printf("[%d]", queue.arr[i]);
   }
-    printf("   Count = %d\n", queue.count);
+  printf("   Count = %d\n", queue.count);   // 2
+
+  int num = peek(&queue);
+  printf("The first element of the queue is %d\n", num);   // 47
+
+  clear(&queue);
+
+  print_queue(&queue);   // emptpy queue
+  printf("   Count = %d\n", queue.count);   // 0
 
   return 0;
 }
