@@ -4,7 +4,7 @@
 
 #define MAXSIZE 10
 
-// Queue object
+// Queue struct
 struct queue {
   int arr[MAXSIZE];
   int head;
@@ -13,7 +13,7 @@ struct queue {
 };
 
 void initialize_queue(struct queue* q) {
-
+  
   q->head = 0;
   q->tail = 0;
   q->count = 0;
@@ -21,34 +21,39 @@ void initialize_queue(struct queue* q) {
   for (int i = 0; i < MAXSIZE; i++) {
     q->arr[i] = INT_MIN;
   }
-  
 }
 
 void enqueue(struct queue* q, int num) {
-
+  
   if (q->count == MAXSIZE) {
     fprintf(stderr, "Queue is full\n");
     exit(EXIT_FAILURE);
   }
   
-  q->arr[q->tail] = num;
-  q->tail++;
-  q->count++;
-  
+  q->arr[q->tail++] = num;
+  q->count++;  
 }
 
 int dequeue(struct queue* q) {
 
-  if (q->count == 0) {
+  if (!q->count) {
+    fprintf(stderr, "Queue is empty\n");
+    exit(EXIT_FAILURE);
+  }
+
+  q->arr[q->head++] = INT_MIN;
+  q->count--;
+}
+
+int peek(struct queue* q) {
+
+  if (!q->count) {
     fprintf(stderr, "Queue is empty\n");
     exit(EXIT_FAILURE);
   }
 
   int num = q->arr[q->head];
-  q->head++;
-  q->count--;
   return num;
-  
 }
 
 int main() {
@@ -71,7 +76,7 @@ int main() {
   int num2 = dequeue(&queue);
   printf("Num 2: %d\n", num2);
 
-  for (int i = 0; i < queue.count; i++) {
+  for (int i = queue.head; i < queue.tail; i++) {
     printf("[%d]", queue.arr[i]);
   }
     printf("   Count = %d\n", queue.count);
