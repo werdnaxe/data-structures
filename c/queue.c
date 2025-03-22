@@ -39,19 +39,24 @@ void enqueue(struct queue* q, int num) {
   q->count++;
 }
 
-void dequeue(struct queue* q) {
+int dequeue(struct queue* q) {
 
   if (!q->count) {
     fprintf(stderr, "Queue is empty\n");
     exit(EXIT_FAILURE);
   }
-  
+
+  int num;
   if (q->count == 1) {
+    num = q->arr[q->head];
     q->arr[q->head] = INT_MIN;
   } else {
+    num = q->arr[q->head];
     q->arr[q->head++] = INT_MIN;
   }
   q->count--;
+
+  return num;
 }
 
 int peek(struct queue* q) {
